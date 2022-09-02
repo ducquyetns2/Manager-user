@@ -1,0 +1,120 @@
+<form class="content-user" method="POST" action="/user/action">
+  <div style="display:flex; justify-content:space-between">
+    <a class="btn btn-primary" href="/user/register">Thêm User</a>
+    <a class="btn btn-primary" href="/user/rubbish">Thùng Rác ( {{count}} )</a>
+  </div>
+  <div class="content-user-select">
+    <div>
+      <input type="checkbox" id="checkbox_allUser">
+      <span>Chọn tất cả</span>
+    </div>
+    <select name="action" class="action_user" required>
+      <option value="">--Hành động--</option>
+      <option value="delete">Xóa</option>
+    </select>
+    <button type="submit" class="btn btn-primary" style="padding:5px" id="implement_action" disabled>Thực hiện</button>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th scope="col">STT
+        </th>
+        <th scope="col">UserName
+          {{{sortable 'userName' sort}}}
+        </th>
+        <th scope="col">PassWord
+          {{{sortable 'password' sort}}}
+        </th>
+        <th scope="col">Email
+          {{{sortable 'email' sort}}}
+        </th>
+        <th colspan="2">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each newUsers}}
+      <tr>
+        <td style="width:25px">
+          <input type="checkbox" name="userIds" class="checkbox_oneUser" value="{{this._id}}">
+        </td>
+        <td scope="row">{{sum @index 1}}</td>
+        <td>{{this.userName}}</td>
+        <td>{{this.password}}</td>
+        <td>{{this.email}}</td>
+        <td style="width:70px">
+          <a class="btn btn-primary" href="/user/{{this._id}}/edit">Sửa</a>
+        </td>
+        <td style="width:70px">
+          <button type="button" class="btn btn-primary btn_isDelete" data-bs-toggle="modal"
+            data-bs-target="#exampleModal" data="{{this._id}}">Xóa</button>
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <td colspan="6">
+          <span style="font-weight:600">Danh sách người dùng trống.</span>
+          <a href="/user/register" style="text-decoration:none">Thêm người dùng</a>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</form>
+<!-- Form submit delete -->
+<form method="POST" id="form_delete" hidden></form>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Bạn chắc chắn muốn xóa người dùng này ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có thể tìm kiếm lại người dùng này trong thư mục rác trên trang web.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btn_delete">Xóa</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Quay Lại</button>
+      </div>
+    </div>
+  </div>
+</div>
+{{!-- Implement Action --}}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btnIsDelete = $('.btn_isDelete')
+    const btnDelete = $('#btn_delete')
+    const formDelete = $('#form_delete')
+    var idDelete = ''
+    btnIsDelete.click(e => {
+      idDelete = e.target.getAttribute('data')
+    })
+    btnDelete.click(e => {
+      console.log("ID", idDelete)
+      formDelete.attr('action', `/user/${idDelete}/delete?_method=DELETE`)
+      formDelete.submit()
+    })
+  })
+</script>
+{{!-- Implement Select --}}
+<script>
+  document.addEventListener('DOMContentLoaded', (e) => {
+    // Get element
+    const allUser = $('#checkbox_allUser')
+    const oneUser = $('.checkbox_oneUser')
+    const impAction = $('#implement_action')
+    var countUser = oneUser.length
+    // Handle Event
+    oneUser.change(() => {
+      var checked = $('.checkbox_oneUser:checked').length
+      allUser.prop('checked', countUser === checked)
+      impAction.prop('disabled', !checked)
+    })
+    allUser.change((e) => {
+      oneUser.prop('checked', $(e.target).prop('checked'))
+      impAction.prop('disabled', !$(e.target).prop('checked'))
+    })
+  })
+</script>

@@ -1,0 +1,94 @@
+<div class="content-user">
+  <a class="btn btn-primary" href="/user">
+    <i class="bi bi-house-fill"></i>
+  </a>
+  <div class="content-user-select">
+    <div>
+      <input type="checkbox" id="checkbox_allUser">
+      <span>Chọn tất cả</span>
+    </div>
+    <select name="action" class="action_user" required>
+      <option value="">--Hành động--</option>
+      <option value="delete">Xóa</option>
+    </select>
+    <button type="submit" class="btn btn-primary" style="padding:5px" id="implement_action" disabled>Thực hiện</button>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">UserName</th>
+        <th scope="col">PassWord</th>
+        <th scope="col">Email</th>
+        <th colspan="2" scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each newUsers}}
+      <tr>
+        <th scope="row">{{sum @index 1}}</th>
+        <td>{{this.userName}}</td>
+        <td>{{this.password}}</td>
+        <td>{{this.email}}</td>
+        <td style="width:150px">
+          <button type="button" class="btn btn-primary btn_isDestroy" data-bs-toggle="modal"
+            data-bs-target="#exampleModal" data-id="{{this._id}}">Xóa vĩnh viễn</button>
+        </td>
+        <td style="width:120px">
+          <button class="btn btn-primary btn_restore" data-id="{{this._id}}">Khôi phục</button>
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <td colspan="6">
+          <h4>Thùng rác trống.</h4>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+<!-- Form submit destroy -->
+<form method="POST" id="form_destroy" hidden></form>
+<!-- Form submit restore -->
+<form method="POST" id="form_restore" hidden></form>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Bạn chắc chắn muốn xóa vĩnh viễn người dùng này ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Sau khi thực hiện hành động này, bạn sẽ không thể khôi phục lại dữ liệu
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btn_destroy">Xóa vĩnh viễn</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Quay Lại</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btnIsDestroy = $('.btn_isDestroy')
+    const btnDestroy = $('#btn_destroy')
+    const formDelete = $('#form_destroy')
+    const btnRestore = $('.btn_restore')
+    const formRestore = $('#form_restore')
+    var idDestroy = ''
+    btnIsDestroy.click(e => {
+      idDelete = $(e.target).data('id')
+    })
+    btnDestroy.click(e => {
+      formDelete.attr('action', `/user/${idDelete}/destroy?_method=DELETE`)
+      formDelete.submit()
+    })
+    btnRestore.click(e => {
+      var idRestore = $(e.target).data('id')
+      formRestore.attr('action', `/user/${idRestore}/restore?_method=PATCH`)
+      formRestore.submit()
+    })
+  })
+</script>
